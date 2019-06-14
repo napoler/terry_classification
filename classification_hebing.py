@@ -5,11 +5,19 @@ import configparser
 import json,time,re
 import Terry_toolkit as tkit
 from tqdm import tqdm
-#宠物数据
+import random
+
+# #宠物数据
 corpus_path_1 = '/home/terry/pan/github/ai_writer/ai_writer/data/kw2text_mini/' #
 #其他数据
 corpus_path_2 = '/home/terry/github/ai_writer/ai_writer/data/kw2text_other/'
-last = '../data/corpus_classification.json'
+
+# 创建dev数据
+
+
+last = '../data/train.json'
+
+dev = '../data/dev.json'
 # item = 'data/article_30e0446c6d5915a10c4a939d70dff353.txt'
 
 tfile=tkit.File()
@@ -68,7 +76,7 @@ def creat_corpus(corpus_path,lei):
                 for j in new_sents:
                     # juzis = str(lei)+"\t"+j +'\n'
                     juzis={
-                        'label':'1',
+                        'label':lei,
                         'sentence':j
 
                     }
@@ -93,7 +101,14 @@ text2= creat_corpus(corpus_path_2,lei)
 text = text1+text2
 
 
+random.shuffle(text)
+
 c_inputfile(last,text)
+# len()
+dev_text = random.sample(text, 500)  #从list中随机获取5个元素，作为一个片断返回  
+# print (slice) 
+c_inputfile(dev,dev_text)
+
 # my_open = open(last, 'a')
 # my_open.write(text)
 # my_open.close()

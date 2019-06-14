@@ -876,8 +876,8 @@ def main():
 
                 # define a new function to compute loss values for both output_modes
                 logits = model(input_ids, segment_ids, input_mask, labels=None)
-                print('评估:')
-                print(logits)
+                # print('评估:')
+                # print(logits)
 
                 if output_mode == "classification":
                     loss_fct = CrossEntropyLoss()
@@ -966,8 +966,8 @@ def main():
 
             with torch.no_grad():
                 logits = model(input_ids, segment_ids, input_mask, labels=None)
-                print('评估:')
-                print(logits)
+                # print('评估:')
+                # print(logits)
 
             # create eval loss and other metric required by the task
             if output_mode == "classification":
@@ -992,6 +992,8 @@ def main():
         elif output_mode == "regression":
             preds = np.squeeze(preds)
         result = compute_metrics(task_name, preds, all_label_ids.numpy())
+        print('result显示')
+        print(result)
         loss = tr_loss/global_step if args.do_train else None
 
         result['eval_loss'] = eval_loss
