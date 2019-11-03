@@ -51,16 +51,18 @@ from transformers import (WEIGHTS_NAME, BertConfig,
 
 from transformers import AdamW, WarmupLinearSchedule
 
-# from transformers import glue_compute_metrics as compute_metrics
+from transformers import glue_compute_metrics as compute_metrics
 # from transformers import glue_output_modes as output_modes
 # from transformers import glue_processors as processors
 
 #调用自定义的数据集
-from terry_glue import erry_glue_compute_metrics as compute_metrics
-from terry_glue import erry_glue_output_modes as output_modes
-from terry_glue import terry_glue_processors as processors
+from terry_glue import glue_compute_metrics as compute_metrics
+from terry_glue import glue_output_modes as output_modes
+from terry_glue import glue_processors as processors
+from terry_glue import glue_convert_examples_to_features as convert_examples_to_features
+from terry_glue import TerryProcessor
 
-from transformers import glue_convert_examples_to_features as convert_examples_to_features
+# from transformers import glue_convert_examples_to_features as convert_examples_to_features
 
 logger = logging.getLogger(__name__)
 
@@ -290,19 +292,24 @@ def load_and_cache_examples(args, task, tokenizer, evaluate=False):
         list(filter(None, args.model_name_or_path.split('/'))).pop(),
         str(args.max_seq_length),
         str(task)))
+    print('cached_features_file',cached_features_file)
     if os.path.exists(cached_features_file) and not args.overwrite_cache:
         logger.info("Loading features from cached file %s", cached_features_file)
         features = torch.load(cached_features_file)
     else:
         logger.info("Creating features from dataset file at %s", args.data_dir)
         label_list = processor.get_labels()
+        # print('label_list',label_list)
         if task in ['mnli', 'mnli-mm'] and args.model_type in ['roberta']:
             # HACK(label indices are swapped in RoBERTa pretrained model)
             label_list[1], label_list[2] = label_list[2], label_list[1] 
         examples = processor.get_dev_examples(args.data_dir) if evaluate else processor.get_train_examples(args.data_dir)
+        # print('examples',len(examples))
+        # print('label_list',label_list)
         features = convert_examples_to_features(examples,
                                                 tokenizer,
                                                 label_list=label_list,
+                                                # task=task,
                                                 max_length=args.max_seq_length,
                                                 output_mode=output_mode,
                                                 pad_on_left=bool(args.model_type in ['xlnet']),                 # pad on the left for xlnet
